@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace WebApiDemo.Migrations
+namespace Repository.Migrations
 {
     public partial class initial : Migration
     {

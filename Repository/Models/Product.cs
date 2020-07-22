@@ -1,4 +1,4 @@
-﻿namespace WebApiDemo.Models
+﻿namespace Repository.Models
 {
     public class Product
     {

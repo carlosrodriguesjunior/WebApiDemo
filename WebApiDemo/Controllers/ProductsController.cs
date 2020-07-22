@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Repository.Data;
+using Repository.Models;
+using Repository.Repositories;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using WebApiDemo.Data;
-using WebApiDemo.Models;
 
 namespace WebApiDemo.Controllers
 {
@@ -13,24 +12,26 @@ namespace WebApiDemo.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly WebApiDemoContext _context;
+        private readonly ProductRepository _productRepository;
 
         public ProductsController(WebApiDemoContext context)
         {
             _context = context;
+            _productRepository = new ProductRepository(_context);
         }
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
+        public async Task<IEnumerable<Product>> GetProduct()
         {
-            return await _context.Product.ToListAsync();
+            return await _productRepository.GetAsync();
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            var product = await _context.Product.FindAsync(id);
+            var product = await _productRepository.GetAsync(id);
 
             if (product == null)
             {
@@ -46,29 +47,7 @@ namespace WebApiDemo.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(int id, Product product)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _productRepository.UpdateAsync(id,product);
             return NoContent();
         }
 
@@ -78,31 +57,19 @@ namespace WebApiDemo.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            _context.Product.Add(product);
-            await _context.SaveChangesAsync();
+            await _productRepository.CreateAsync(product);
 
             return CreatedAtAction("GetProduct", new { id = product.Id }, product);
         }
 
         // DELETE: api/Products/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Product>> DeleteProduct(int id)
+        public async Task<ActionResult> DeleteProduct(int id)
         {
-            var product = await _context.Product.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
+            await _productRepository.DeleteAsync(id);
 
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return product;
+            return NoContent();
         }
 
-        private bool ProductExists(int id)
-        {
-            return _context.Product.Any(e => e.Id == id);
-        }
     }
 }

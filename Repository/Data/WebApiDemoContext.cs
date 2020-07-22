@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using WebApiDemo.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Models;
 
-namespace WebApiDemo.Data
+namespace Repository.Data
 {
     public class WebApiDemoContext : DbContext
     {
